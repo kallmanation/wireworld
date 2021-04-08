@@ -1,10 +1,10 @@
-import App from './App.svelte';
+import Wireworld from './Wireworld.svelte';
 
-const app = new App({
+const wireworld = new Wireworld({
 	target: document.body,
 	props: {
-		name: 'world'
+		name: 'Wireworld'
 	}
 });
 
-export default app;
+export default wireworld;
