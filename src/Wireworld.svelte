@@ -11,7 +11,6 @@
 </script>
 
 <MainArea>
-	<h1>Hello {name}!</h1>
   <p>Tool: {$tool.toString()}</p>
   <p>Window: {$width} x {$height}</p>
   <p>Scale: {$scale}</p>

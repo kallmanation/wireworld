@@ -13,12 +13,15 @@
   const setClicking = () => { clicking = true };
   const unsetClicking = () => { clicking = false };
   const handleWheel = (event) => {
-    position.update(([x, y]) => [x - (event.deltaY), y - (event.deltaY)]);
+    position.update(([x, y]) => [x - (event.deltaY / 2), y - (event.deltaY / 2)]);
     scale.update(n => Math.max(n + event.deltaY, 1));
   };
 	const handleMousemove = (event) => {
     cursor.set([event.screenX, event.screenY]);
-    if (clicking) position.update(([x, y]) => [x - ($scale * event.movementX / $width), y - ($scale * event.movementY / $height)]);
+    if (clicking) {
+      const movementScaling = $scale / Math.min($width, $height);
+      position.update(([x, y]) => [x - (event.movementX * movementScaling), y - (event.movementY * movementScaling)]);
+    }
   };
   const handleKeydown = (event) => {
     switch (event.keyCode) {

@@ -32,7 +32,7 @@
 
 
 <svg viewBox="{leftEdge} {topEdge} {xScale} {yScale}">
-  <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+  <rect x="0" y="0" width="{$width}" height="{$height}" style="fill:rgb(255,0,0)" />
 </svg>
 
 <style>
