@@ -8,16 +8,42 @@
     tool,
     Tools
   } from './uiStore.js';
+  import {
+    currentState
+  } from './worldStore.js';
 
+  const handleClick = () => {
+    setClicking();
+    const dimensions = [$width, $height];
+    const [x, y] = [0, 1].map(n => Math.floor($position[n] + $scale * $cursor[n] / dimensions[n]));
+    switch ($tool) {
+      case Tools.HAND:
+        break;
+      case Tools.WIRE:
+        currentState.addWire(x, y);
+        break;
+      case Tools.TAIL:
+        currentState.addTail(x, y);
+        break;
+      case Tools.HEAD:
+        currentState.addHead(x, y);
+        break;
+      case Tools.NULL:
+        currentState.nullifyCell(x, y);
+        break;
+    }
+  }
   let clicking = false;
   const setClicking = () => { clicking = true };
   const unsetClicking = () => { clicking = false };
   const handleWheel = (event) => {
-    position.update(([x, y]) => [x - (event.deltaY / 2), y - (event.deltaY / 2)]);
-    scale.update(n => Math.max(n + event.deltaY, 1));
+    if ($scale + event.deltaY >= 5) {
+      position.update(([x, y]) => [x - (event.deltaY / 2), y - (event.deltaY / 2)]);
+      scale.update(n => n + event.deltaY);
+    }
   };
 	const handleMousemove = (event) => {
-    cursor.set([event.screenX, event.screenY]);
+    cursor.set([event.pageX, event.pageY]);
     if (clicking) {
       const movementScaling = $scale / Math.min($width, $height);
       position.update(([x, y]) => [x - (event.movementX * movementScaling), y - (event.movementY * movementScaling)]);
@@ -29,7 +55,7 @@
         // back-tick
       case 48:
         // 0 key
-        tool.set(Tools.NONE);
+        tool.set(Tools.NULL);
         break;
       case 49:
         // 1 key
@@ -47,6 +73,10 @@
         // 4 key
         tool.set(Tools.HAND);
         break;
+      case 80:
+        // p key
+        currentState.nextState();
+        break;
     }
   };
   const handleResize = () => {
@@ -57,7 +87,7 @@
 
 <svelte:window on:keydown={handleKeydown} on:resize|passive={handleResize}/>
 
-<main on:mouseup={unsetClicking} on:mousedown={setClicking} on:mousemove={handleMousemove} on:wheel|preventDefault={handleWheel}>
+<main on:mouseup={unsetClicking} on:mousedown={handleClick} on:mousemove={handleMousemove} on:wheel|preventDefault={handleWheel}>
   <slot></slot>
 </main>
 

@@ -12,9 +12,7 @@
 
 <MainArea>
   <p>Tool: {$tool.toString()}</p>
-  <p>Window: {$width} x {$height}</p>
-  <p>Scale: {$scale}</p>
-  <p>Position: {$position[0]} : {$position[1]}</p>
+  <p>Press 'p' to advance time</p>
   <GraphicWrapper></GraphicWrapper>
 </MainArea>
 

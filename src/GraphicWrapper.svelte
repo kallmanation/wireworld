@@ -8,6 +8,9 @@
     tool,
     Tools
   } from './uiStore.js';
+  import {
+    cells
+  } from './worldStore.js';
 
   const upperLeftCorner = ({ position, scale, width, height }) => {
     return [
@@ -26,13 +29,15 @@
 
   let xScale, yScale;
   let leftEdge, topEdge;
+  console.log($cells);
   $: [xScale, yScale] = aspectScales({ scale: $scale, width: $width, height: $height });
   $: [leftEdge, topEdge] = upperLeftCorner({ position: $position, scale: $scale, width: $width, height: $height });
 </script>
 
-
 <svg viewBox="{leftEdge} {topEdge} {xScale} {yScale}">
-  <rect x="0" y="0" width="{$width}" height="{$height}" style="fill:rgb(255,0,0)" />
+  {#each $cells as cell}
+    <rect x="{cell.x}" y="{cell.y}" width="{1}" height="{1}" style="fill:{cell.color}" />
+  {/each}
 </svg>
 
 <style>

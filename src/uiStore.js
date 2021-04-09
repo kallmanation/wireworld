@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 export const Tools = {
-  NONE: Symbol("none"),
+  NULL: Symbol("null"),
   WIRE: Symbol("wire"),
   TAIL: Symbol("tail"),
   HEAD: Symbol("head"),
