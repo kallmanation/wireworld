@@ -83,7 +83,7 @@ const initialState = () => {
 	};
 };
 export const currentState = initialState();
-export const exportCurrentState = (exportable) => btoa(JSON.stringify(exportable ?? $currentState));
+export const exportCurrentState = (exportable) => btoa(JSON.stringify(exportable));
 export const importCurrentState = (importable) => currentState.inport(JSON.parse(atob(importable)));
 if (localStorage.wireworldState) importCurrentState(localStorage.wireworldState);
 currentState.subscribe((s) => localStorage.wireworldState = exportCurrentState(s));
