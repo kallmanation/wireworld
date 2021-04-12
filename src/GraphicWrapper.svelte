@@ -29,7 +29,6 @@
 
   let xScale, yScale;
   let leftEdge, topEdge;
-  console.log($cells);
   $: [xScale, yScale] = aspectScales({ scale: $scale, width: $width, height: $height });
   $: [leftEdge, topEdge] = upperLeftCorner({ position: $position, scale: $scale, width: $width, height: $height });
 </script>

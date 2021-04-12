@@ -32,13 +32,14 @@ const wire = {
 };
 
 const initialState = () => {
-  const { subscribe, update } = writable({})
+  const { subscribe, set, update } = writable({})
   const addX = (type) => (x, y) => update(currentState => {
     currentState[coordinatesToLocation(x, y)] = type;
     return currentState;
   });
 	return {
 		subscribe,
+    set,
     addWire: addX(wire),
     addTail: addX(tail),
 		addHead: addX(head),
@@ -47,7 +48,6 @@ const initialState = () => {
       return currentState;
     }),
     nextState: () => update(currentState => {
-      console.log("computing next state from: ", currentState);
       const locationsOfInterest = Object.keys(currentState);
       const sparkList = locationsOfInterest.reduce((list, locationOfInterest) => {
         return [
@@ -67,6 +67,20 @@ const initialState = () => {
 	};
 };
 export const currentState = initialState();
+export const exportCurrentState = (exportable) => btoa(JSON.stringify(exportable ?? $currentState));
+export const importCurrentState = (importable) => currentState.set(JSON.parse(atob(importable)));
+if (localStorage.wireworldState) importCurrentState(localStorage.wireworldState);
+currentState.subscribe((s) => localStorage.wireworldState = exportCurrentState(s));
+
+const buildRunning = () => {
+  const { subscribe, set } = writable(false)
+	return {
+		subscribe,
+    play: set(true),
+    pause: set(false),
+	};
+};
+export const running = buildRunning();
 
 export const cells = derived(currentState, $currentState => {
   const locationsOfInterest = Object.keys($currentState);
