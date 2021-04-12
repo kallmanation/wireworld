@@ -33,6 +33,7 @@
   <ButtonGroup summary="Meta">
     <button on:click={showPortModal}>Export</button>
     <button on:click={showPortModal}>Import</button>
+    <a href="/examples" target="_blank">Examples</a>
     <button on:click={deleteAll}>Delete All</button>
   </ButtonGroup>
   <ButtonGroup summary="Controls">
@@ -60,7 +61,7 @@
     transform: translateX(-50%);
     bottom: 1vh;
   }
-  button {
+  button, a {
     text-align: center;
     color: white;
     background: black;
