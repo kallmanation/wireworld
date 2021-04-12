@@ -9,13 +9,13 @@
     Tools
   } from './uiStore.js';
   import {
-    currentState
+    currentState,
+    running
   } from './worldStore.js';
 
   const handleClick = () => {
     setClicking();
-    const dimensions = [$width, $height];
-    const [x, y] = [0, 1].map(n => Math.floor($position[n] + $scale * $cursor[n] / dimensions[n]));
+    const [x, y] = [0, 1].map(n => Math.floor($position[n] + $scale * $cursor[n] / Math.min($width, $height)));
     switch ($tool) {
       case Tools.HAND:
         break;
@@ -73,9 +73,13 @@
         // 4 key
         tool.set(Tools.HAND);
         break;
+      case 78:
+        // n key
+        currentState.nextState();
+        break;
       case 80:
         // p key
-        currentState.nextState();
+        $running ? running.pause() : running.play();
         break;
     }
   };

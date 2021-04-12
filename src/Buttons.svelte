@@ -1,5 +1,6 @@
 <script>
   import ButtonGroup from './ButtonGroup.svelte';
+  import PortModal from './PortModal.svelte';
   import {
     scale,
     tool,
@@ -10,31 +11,33 @@
     running
   } from './worldStore.js';
 
-  const sorry = () => {
-    alert("Sorry, I haven't built this yet");
-  };
   const zoomin = () => scale.update(n => n - 1);
   const zoomout = () => scale.update(n => n + 1);
-  const showExport = () => {
-    sorry();
-  };
-  const showImport = () => {
-    sorry();
-  };
+  const deleteAll = () => confirm("Delete all your hard work?") ? currentState.inport({}) : null;
+  let shouldShowPortModal = false;
+  const showPortModal = () => {
+    running.pause();
+    shouldShowPortModal = true;
+  }
+  const hidePortModal = () => shouldShowPortModal = false;
   let onPlayPause, playOrPause;
   $: onPlayPause = $running ? running.pause : running.play;
   $: playOrPause = $running ? "Pause" : "Play";
   const setTool = (newTool) => () => tool.set(newTool);
 </script>
 
+{#if shouldShowPortModal}
+  <PortModal done={hidePortModal}></PortModal>
+{/if}
 <aside>
   <ButtonGroup summary="Meta">
-    <button on:click={zoomin}>Zoom In</button>
-    <button on:click={zoomout}>Zoom Out</button>
-    <button on:click={showExport}>Export</button>
-    <button on:click={showImport}>Import</button>
+    <button on:click={showPortModal}>Export</button>
+    <button on:click={showPortModal}>Import</button>
+    <button on:click={deleteAll}>Delete All</button>
   </ButtonGroup>
   <ButtonGroup summary="Controls">
+    <button on:click={zoomin}>Zoom In</button>
+    <button on:click={zoomout}>Zoom Out</button>
     <button on:click={onPlayPause}>{playOrPause}</button>
     <button on:click={currentState.nextState}>Step</button>
   </ButtonGroup>
