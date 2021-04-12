@@ -1,35 +1,49 @@
 <script>
   import ButtonGroup from './ButtonGroup.svelte';
   import {
-    width,
-    height,
     scale,
-    cursor,
-    position,
     tool,
     Tools
   } from './uiStore.js';
+  import {
+    currentState,
+    running
+  } from './worldStore.js';
 
   const sorry = () => {
     alert("Sorry, I haven't built this yet");
   };
+  const zoomin = () => scale.update(n => n - 1);
+  const zoomout = () => scale.update(n => n + 1);
+  const showExport = () => {
+    sorry();
+  };
+  const showImport = () => {
+    sorry();
+  };
+  let onPlayPause, playOrPause;
+  $: onPlayPause = $running ? running.pause : running.play;
+  $: playOrPause = $running ? "Pause" : "Play";
+  const setTool = (newTool) => () => tool.set(newTool);
 </script>
 
 <aside>
   <ButtonGroup summary="Meta">
-    <button on:click={sorry}>Export</button>
-    <button on:click={sorry}>Import</button>
+    <button on:click={zoomin}>Zoom In</button>
+    <button on:click={zoomout}>Zoom Out</button>
+    <button on:click={showExport}>Export</button>
+    <button on:click={showImport}>Import</button>
   </ButtonGroup>
   <ButtonGroup summary="Controls">
-    <button on:click={sorry}>Play</button>
-    <button on:click={sorry}>Step</button>
+    <button on:click={onPlayPause}>{playOrPause}</button>
+    <button on:click={currentState.nextState}>Step</button>
   </ButtonGroup>
   <ButtonGroup summary="Tools">
-    <button on:click={sorry}>Move</button>
-    <button on:click={sorry}>Erase</button>
-    <button on:click={sorry}>Wire</button>
-    <button on:click={sorry}>Electron Head</button>
-    <button on:click={sorry}>Electron Tail</button>
+    <button on:click={setTool(Tools.HAND)}>Move</button>
+    <button on:click={setTool(Tools.NULL)}>Erase</button>
+    <button on:click={setTool(Tools.WIRE)}>Wire</button>
+    <button on:click={setTool(Tools.HEAD)}>Electron Head</button>
+    <button on:click={setTool(Tools.TAIL)}>Electron Tail</button>
   </ButtonGroup>
 </aside>
 

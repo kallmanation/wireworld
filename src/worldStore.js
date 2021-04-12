@@ -18,17 +18,27 @@ const head = {
       [x - 1, y - 1],
     ].map(([x, y]) => coordinatesToLocation(x, y));
   },
-  color: "rgb(255,87,21)"
+  rehydrate: "head"
 };
 const tail = {
   next: (sparks) => wire,
   spark: (location) => [],
-  color: "rgb(244,133,92)"
+  rehydrate: "tail"
 };
 const wire = {
   next: (sparks) => (sparks == 1 || sparks == 2) ? head : wire,
   spark: (location) => [],
-  color: "rgb(0,0,0)"
+  rehydrate: "wire"
+};
+const rehydrate = (o) => {
+  switch (o.rehydrate) {
+    case "head":
+      return head;
+    case "tail":
+      return tail;
+    case "wire":
+      return wire;
+  }
 };
 
 const initialState = () => {
@@ -39,7 +49,13 @@ const initialState = () => {
   });
 	return {
 		subscribe,
-    set,
+    inport: (importable) => {
+      const locationsOfInterest = Object.keys(importable);
+      set(locationsOfInterest.reduce((state, locationOfInterest) => {
+        state[locationOfInterest] = rehydrate(importable[locationOfInterest]);
+        return state;
+      }, {}));
+    },
     addWire: addX(wire),
     addTail: addX(tail),
 		addHead: addX(head),
@@ -68,16 +84,25 @@ const initialState = () => {
 };
 export const currentState = initialState();
 export const exportCurrentState = (exportable) => btoa(JSON.stringify(exportable ?? $currentState));
-export const importCurrentState = (importable) => currentState.set(JSON.parse(atob(importable)));
+export const importCurrentState = (importable) => currentState.inport(JSON.parse(atob(importable)));
 if (localStorage.wireworldState) importCurrentState(localStorage.wireworldState);
 currentState.subscribe((s) => localStorage.wireworldState = exportCurrentState(s));
 
 const buildRunning = () => {
-  const { subscribe, set } = writable(false)
+  let interval;
+  const start = () => interval = setInterval(() => currentState.nextState(), 120);
+  start();
+  let { subscribe, set } = writable(true);
 	return {
-		subscribe,
-    play: set(true),
-    pause: set(false),
+    subscribe,
+    play: () => {
+      set(true);
+      start();
+    },
+    pause: () => {
+      set(false);
+      clearInterval(interval);
+    },
 	};
 };
 export const running = buildRunning();
@@ -86,7 +111,19 @@ export const cells = derived(currentState, $currentState => {
   const locationsOfInterest = Object.keys($currentState);
   return locationsOfInterest.reduce((cells, locationOfInterest) => {
     const [x, y] = locationToCoordinates(locationOfInterest);
-    cells.push({ x, y, color: $currentState[locationOfInterest].color});
+    let color;
+    switch ($currentState[locationOfInterest].rehydrate) {
+      case "head":
+        color = "rgb(255,87,21)";
+        break;
+      case "tail":
+        color = "rgb(244,133,92)";
+        break;
+      case "wire":
+        color = "rgb(0,0,0)";
+        break;
+    }
+    cells.push({ x, y, color });
     return cells;
   }, []);
 });
